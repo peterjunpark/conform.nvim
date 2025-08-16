@@ -1,12 +1,15 @@
 local log = require("conform.log")
 
 -- Requires `--unstable-component` flag or
--- `"unstable": ["fmt-component]` config option.
+-- `"unstable": ["fmt-component"]` config option.
 -- https://docs.deno.com/runtime/reference/cli/formatter/#formatting-options-unstable-component
 local unstable_extensions = {
   astro = "astro",
   svelte = "svelte",
   vue = "vue",
+  -- Requires `--unstable-sql` flag or
+  -- `"unstable": ["fmt-sql"]` config option.
+  sql = "sql",
 }
 local extensions = vim.tbl_extend("keep", {
   css = "css",
@@ -21,6 +24,7 @@ local extensions = vim.tbl_extend("keep", {
   scss = "scss",
   typescript = "ts",
   typescriptreact = "tsx",
+  vento = "vto",
   yaml = "yml",
 }, unstable_extensions)
 
@@ -43,7 +47,13 @@ return {
       extension,
     }
 
-    if unstable_extensions[extension] then
+    if extension == "sql" then
+      log.info(
+        "Adding `--unstable-sql` to enable formatting of .%s files. See the Deno documentation for more information: https://docs.deno.com/runtime/reference/cli/formatter/#formatting-options-unstable-sql",
+        extension
+      )
+      formatter_args = vim.list_extend(formatter_args, { "--unstable-sql" })
+    elseif unstable_extensions[extension] then
       log.info(
         "Adding `--unstable-component` to enable formatting of .%s files. See the Deno documentation for more information: https://docs.deno.com/runtime/reference/cli/formatter/#formatting-options-unstable-component",
         extension
